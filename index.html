@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>バリアフリーマップ</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .ads-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <!-- 地図 -->
+    <div id="map"></div>
+
+    <!-- 広告 -->
+    <div class="ads-container">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-4812968945313569"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- Mapbox JS -->
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibmF0dWthd2EiLCJhIjoiY2xnbGp6ZGZzMDE4dTNkcjM3N3lhcnZtcCJ9.9QjFR-bC3HOcyNpY7fESYg';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [139.759455, 35.682839], // 東京駅
+            zoom: 14
+        });
+
+        map.on('load', () => {
+            const roads = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "width": 2.0,
+                            "elevation": 2
+                        },
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": [
+                                [139.759455, 35.682839],
+                                [139.760455, 35.683839]
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "width": 0.8,
+                            "elevation": 6
+                        },
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": [
+                                [139.758455, 35.682339],
+                                [139.759455, 35.683339]
+                            ]
+                        }
+                    }
+                ]
+            };
+
+            map.addSource('roads', {
+                type: 'geojson',
+                data: roads
+            });
+
+            map.addLayer({
+                id: 'road-layer',
+                type: 'line',
+                source: 'roads',
+                paint: {
+                    'line-color': [
+                        'case',
+                        ['>', ['get', 'elevation'], 5], '#FF0000',
+                        ['>', ['get', 'width'], 1], '#0000FF',
+                        '#888888'
+                    ],
+                    'line-width': 5
+                }
+            });
+        });
+    </script>
+</body>
+</html>
